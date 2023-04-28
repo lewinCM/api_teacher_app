@@ -1,7 +1,9 @@
 
 const models = {
 
-  // inmubleModel: require('./nosql/Immueble'),
+
+  courseModel: require('./nosql/course/course'),
+
 
 };
 
