@@ -1,18 +1,39 @@
 // register
 const CreateAdminUser = (req, res) => {
-  res.send("CreateAdminUser");
+  const body = req.body;
+  res.send(body);
+
 }
 const AllAdminUsers = (req, res) => {
-  res.send("AllAdminUsers");
+  const { q, nombre, apiKey } = req.query;
+  res.json({
+    msg: 'AllAdminUsers',
+    q,
+    nombre,
+    apiKey
+  });
 }
 const AdminUserById = (req, res) => {
-  res.send("AdminUserById");
+  const id = req.params.id;
+  res.json({
+    msg: 'AdminUserById',
+    id,
+  });
+
 }
 const UpdateAdminUser = (req, res) => {
-  res.send("UpdateAdminUser");
+  const id = req.params.id;
+  res.json({
+    msg: 'UpdateAdminUser',
+    id,
+  });
 }
 const DeleteAdminUser = (req, res) => {
-  res.send("DeleteAdminUser");
+  const id = req.params.id;
+  res.json({
+    msg: 'delete',
+    id,
+  });
 }
 
 

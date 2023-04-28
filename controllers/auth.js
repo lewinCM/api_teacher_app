@@ -1,7 +1,10 @@
 // register
 const registerCtl = (req, res) => {
-  res.send("register");
+  const body = req.body;
+  res.send(body);
 }
+
+
 
 // login
 const loginCtl = (req, res) => {
