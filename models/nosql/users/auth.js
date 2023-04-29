@@ -7,6 +7,7 @@ const UserSchema = Schema({
   img: { type: String, required: false, },
   rol: { type: String, required: false, enum: ['user', 'admin', 'profesor'], default: 'user' },
   estado: { type: Boolean, default: true },
+  google: { type: String, required: false },
 
 },
   {

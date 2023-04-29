@@ -1,6 +1,7 @@
 const { userModel } = require("../models")
 const bcryptjs = require("bcryptjs")
 const { emailExiste } = require("../utils/handleDbValidators")
+const { matchedData } = require("express-validator")
 
 
 const registerCtrl = async (req, res) => {
@@ -19,19 +20,48 @@ const registerCtrl = async (req, res) => {
 
 // regresar todos los user insertado en la data
 const allUsers = async (req, res) => {
-  const { body } = req
-  const User = await userModel.find({})
-  res.json({ ok: true, User })
+  try {
+    // con paginacion
+    const { limite = 1, desde = 0 } = req.query
+    const Users = await userModel.find()
+      .skip(Number(desde))
+      .limit(Number(limite))
+    // retorno del numero total de registro
+
+    res.json({ ok: true, Users })
+  } catch (error) {
+    res.status(400).send(error)
+  }
 }
 const UsersById = async (req, res) => {
-  const id = req.params.id
-  const User = await userModel.findById(id)
-  res.json({ ok: true, User })
+  try {
+    const id = req.params.id
+    const User = await userModel.findById(id)
+    res.json({ ok: true, User })
+  } catch (error) {
+    res.status(400).send(error)
+  }
 }
+
 const UpdateUser = async (req, res) => {
-  const id = req.params.id
-  const User = await userModel.findByIdAndUpdate(id)
-  res.json({ ok: true, User })
+  try {
+    const { id } = req.params
+    const { password, google, ...resto } = req.body;
+
+    if (password) {
+      const salt = bcryptjs.genSaltSync()
+      resto.password = bcryptjs.hashSync(password, salt)
+    }
+    const user = await userModel.findOneAndUpdate(
+      id, resto
+    );
+    res.send({ msg: 'los datos se han actualizados correctamente', id, user });
+  } catch (e) {
+    console.log(e);
+    res.send({ error: e })
+    // handleHttpError(res, "ERROR_UPDATE_ITEMS");
+  }
+
 }
 const DeleteUser = async (req, res) => {
   const id = req.params.id
