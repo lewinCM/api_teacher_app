@@ -4,6 +4,7 @@ const { RolValidate, emailExiste } = require("../utils/handleDbValidators");
 
 
 const validatorRegister = [
+
   check("name")
     .exists()
     .notEmpty()
@@ -17,6 +18,12 @@ const validatorRegister = [
 
   check("email", "El correo no es valido").custom(emailExiste),
 
+  (req, res, next) => {
+    return validateResults(req, res, next)
+  }
+];
+const deleteUser = [
+  check("id", 'el id no existe').isMongoId().custom(emailExiste),
   (req, res, next) => {
     return validateResults(req, res, next)
   }
@@ -36,4 +43,4 @@ const validatorLogin = [
   }
 ];
 
-module.exports = { validatorRegister, validatorLogin };
+module.exports = { validatorRegister, validatorLogin, deleteUser };

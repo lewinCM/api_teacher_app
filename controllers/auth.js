@@ -23,12 +23,18 @@ const allUsers = async (req, res) => {
   try {
     // con paginacion
     const { limite = 1, desde = 0 } = req.query
-    const Users = await userModel.find()
-      .skip(Number(desde))
-      .limit(Number(limite))
-    // retorno del numero total de registro
+    const query = { estado: true }
+    // numero total de registro
+    const [total, users] = await Promise.all([
+      userModel.countDocuments(query),
+      userModel.find(query)
+        .skip(Number(desde))
+        .limit(Number(limite))
+    ])
+    res.json({ total, users })
 
-    res.json({ ok: true, Users })
+
+
   } catch (error) {
     res.status(400).send(error)
   }
@@ -64,9 +70,20 @@ const UpdateUser = async (req, res) => {
 
 }
 const DeleteUser = async (req, res) => {
-  const id = req.params.id
-  const User = await userModel.findByIdAndDelete(id)
-  res.json({ ok: true, User })
+  try {
+    const id = req.params.id
+    // eliminacion fisica
+    // const deleteUser = await userModel.findByIdAndDelete(id)
+
+    // eliminancion logica
+    const deleteUser = await userModel.findOneAndUpdate(id, { estado: false })
+
+
+    // res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
+    res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
+  } catch (error) {
+    res.send({ error: error })
+  }
 }
 
 module.exports = {
