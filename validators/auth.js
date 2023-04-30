@@ -30,11 +30,11 @@ const deleteUser = [
 ];
 
 const validatorLogin = [
-  check("password")
+  check("password", "La contraseña es obligatoria")
     .exists()
     .notEmpty()
     .isLength({ min: 3, max: 15 }),
-  check("email")
+  check("email", "El email es obligatorio")
     .exists()
     .notEmpty()
     .isEmail(),

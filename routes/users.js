@@ -1,18 +1,22 @@
 const express = require('express');
-const { loginCtrl, registerCtrl, allUsers, UsersById, UpdateUser, DeleteUser } = require('../controllers/auth');
+const { login, register, allUsers, UsersById, UpdateUser, DeleteUser } = require('../controllers/auth');
 const { validatorRegister, validatorLogin, deleteUser } = require("../validators/auth");
+const { validarJwt } = require('../validators/validated-jwt');
 
 const router = express.Router()
 
 
-router.post("/auth/register", validatorRegister, registerCtrl)
 router.get("/", allUsers)
-router.get("/:id", validatorRegister, UsersById)
+router.get("/:id", UsersById)
 router.put("/:id", validatorRegister, UpdateUser)
-router.delete("/:id", deleteUser, DeleteUser)
+router.delete("/:id", validarJwt, deleteUser, DeleteUser)
 
 
-router.post("/auth/login", validatorLogin, loginCtrl)
+
+router.post("/auth/register", validatorRegister, register)
+router.post("/auth/login", validatorLogin, login)
+
+
 
 
 
