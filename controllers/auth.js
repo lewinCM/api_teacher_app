@@ -1,7 +1,5 @@
 const { userModel } = require("../models")
 const bcryptjs = require("bcryptjs")
-const { emailExiste } = require("../utils/handleDbValidators")
-const { matchedData } = require("express-validator")
 
 
 const registerCtrl = async (req, res) => {
@@ -86,7 +84,14 @@ const DeleteUser = async (req, res) => {
   }
 }
 
+
+// login
+const loginCtrl = async (req, res) => {
+  res.send("ok login")
+}
+
 module.exports = {
+  loginCtrl,
   registerCtrl,
   allUsers,
   UsersById,
