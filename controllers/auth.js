@@ -3,7 +3,7 @@ const { userModel } = require("../models")
 const { encrypt, compare } = require("../middlewares/handlePassword")
 const { tokenSign } = require("../middlewares/handleJwt")
 const { handleHttpError } = require("../utils/handleError")
-
+const bcryptjs = require('bcryptjs')
 
 const register = async (req, res) => {
   try {
@@ -75,17 +75,17 @@ const UpdateUser = async (req, res) => {
 }
 const DeleteUser = async (req, res) => {
   try {
-    const { id } = req.params.id
+    const id = req.params.id
 
     // eliminacion fisica
-    // const deleteUser = await userModel.findByIdAndDelete(id)
+    const deleteUser = await userModel.findByIdAndDelete(id)
 
     // eliminancion logica
-    const deleteUser = await userModel.findOneAndUpdate(id, { estado: false })
+    // const deleteUser = await userModel.findOneAndUpdate(id, { estado: false })
 
 
     // res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
-    res.json({ deleteUser })
+    res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
   } catch (error) {
     handleHttpError(res, 'Hubo un problema en la eliminacion del user')
 
@@ -95,37 +95,48 @@ const DeleteUser = async (req, res) => {
 
 // login
 const login = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    req = matchedData(req);
-    const user = await userModel.findOne({ email: req.email })
 
+    // Verificar si el email existe
+    const user = await userModel.findOne({ email });
     if (!user) {
-      handleHttpError(res, "USER_NOT_EXISTS", 404);
-      return
+      return res.status(400).json({
+        msg: 'user / Password no son correctos - email'
+      });
     }
 
-    const hashPassword = user.get('password');
-
-    const check = await compare(req.password, hashPassword)
-
-    if (!check) {
-      handleHttpError(res, "PASSWORD_INVALID", 401);
-      return
+    // SI el user está activo
+    if (!user.estado) {
+      return res.status(400).json({
+        msg: 'user / Password no son correctos - estado: false'
+      });
     }
 
-    user.set('password', undefined, { strict: false })
-    const data = {
-      token: await tokenSign(user),
-      user
+    // Verificar la contraseña
+    const validPassword = bcryptjs.compareSync(password, user.password);
+    if (!validPassword) {
+      return res.status(400).json({
+        msg: 'user / Password no son correctos - password'
+      });
     }
 
-    res.send({ data, mgs: 'Bienvenido login' })
+    // Generar el JWT
+    const token = await generarJWT(user.id);
 
+    res.json({
+      user,
+      token
+    })
 
-  } catch (e) {
-    console.log(e)
-    handleHttpError(res, "ERROR_LOGIN_USER")
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      msg: 'Hable con el administrador'
+    });
   }
+
 }
 
 

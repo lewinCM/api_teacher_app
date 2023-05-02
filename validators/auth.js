@@ -16,7 +16,7 @@ const validatorRegister = [
     .isLength({ min: 3, max: 15 }),
   check("rol").custom(RolValidate),
 
-  check("email", "El correo no es valido").custom(emailExiste),
+  check("email", "El correo no es valido").custom(emailExiste).isEmail(),
 
   (req, res, next) => {
     return validateResults(req, res, next)

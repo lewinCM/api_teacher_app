@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken")
+const { userModel } = require("../models")
+
+
 
 const validarJwt = async (req, res, next) => {
   const token = req.header('x-token')
@@ -8,8 +11,6 @@ const validarJwt = async (req, res, next) => {
       msg: 'no tienes acceso a este metodo'
     })
   }
-
-
   try {
     jwt.verify(token, process.env.JWT_SECRET)
     next()
