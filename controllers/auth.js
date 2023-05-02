@@ -4,6 +4,7 @@ const { encrypt, compare } = require("../middlewares/handlePassword")
 const { tokenSign } = require("../middlewares/handleJwt")
 const { handleHttpError } = require("../utils/handleError")
 const bcryptjs = require('bcryptjs')
+const { generarJWT } = require('../utils/generar-jwt');
 
 const register = async (req, res) => {
   try {
@@ -95,46 +96,40 @@ const DeleteUser = async (req, res) => {
 
 // login
 const login = async (req, res) => {
-  const { email, password } = req.body;
-
+  const { email, password } = req.body
   try {
-
-    // Verificar si el email existe
-    const user = await userModel.findOne({ email });
-    if (!user) {
+    // verificar si el email existe
+    const usuario = await userModel.findOne({ email })
+    if (!usuario) {
       return res.status(400).json({
-        msg: 'user / Password no son correctos - email'
+        msg: 'Usuario / Password no son correctos'
       });
     }
 
-    // SI el user está activo
-    if (!user.estado) {
+    // si esta activo
+    if (!usuario.estado) {
       return res.status(400).json({
-        msg: 'user / Password no son correctos - estado: false'
+        msg: 'Usuario / Password no son correctos - estado: false'
       });
     }
 
-    // Verificar la contraseña
-    const validPassword = bcryptjs.compareSync(password, user.password);
+    // verificar la contraseña
+
+    const validPassword = bcryptjs.compareSync(password, usuario.password);
     if (!validPassword) {
       return res.status(400).json({
-        msg: 'user / Password no son correctos - password'
+        msg: 'Usuario / Password no son correctos - password'
       });
     }
-
-    // Generar el JWT
-    const token = await generarJWT(user.id);
-
+    // general ej JWT
+    const token = await generarJWT(usuario.id);
     res.json({
-      user,
+      msg: "Bienvenido",
+      usuario,
       token
     })
-
   } catch (error) {
-    console.log(error)
-    res.status(500).json({
-      msg: 'Hable con el administrador'
-    });
+    handleHttpError(res, 'Hubo un error al ingresar, pongase en contacto con soporte')
   }
 
 }
