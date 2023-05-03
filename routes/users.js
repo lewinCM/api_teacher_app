@@ -1,30 +1,34 @@
-const express = require('express')
-const { loginCtl, registerCtl } = require('../controllers/auth')
-const { CreateAdminUser, AdminUserById, AllAdminUsers, DeleteAdminUser, UpdateAdminUser } = require('../controllers/admin')
-const { UpdateEstudiante, CreateEstudiante } = require('../controllers/estudiante')
-const { CreateProfesor, UpdateProfesor } = require('../controllers/profesor')
+const express = require('express');
+const { login, register, allUsers, UsersById, UpdateUser, DeleteUser } = require('../controllers/auth');
+const { validatorRegister, validatorLogin, deleteUser } = require("../validators/auth");
+
+const { validarjwt } = require('../middlewares/validar-jwt');
+const { esAdminRole, tieneRole } = require('../middlewares/validated-role');
+
+
 const router = express.Router()
 
 
+router.get("/", allUsers)
+router.get("/:id", UsersById)
+router.put("/:id", validatorRegister, UpdateUser)
 
-// register
-router.post("/auth/register", registerCtl)
-// login
-router.post("/auth/login", loginCtl)
+// ruta protegida
+router.delete("/:id",
+  validarjwt,
+  esAdminRole,
+  tieneRole('admin', 'profesor', 'user'),
+
+  DeleteUser)
 
 
-// admin
-router.post("/", CreateAdminUser)
-router.get("/", AllAdminUsers)
-router.get("/:id", AdminUserById)
-router.put("/:id", UpdateAdminUser)
-router.delete("/:id", DeleteAdminUser)
-// profesores
-router.post("/", CreateProfesor,)
-router.put("/:id", UpdateProfesor)
 
-// alumnos
-router.post("/", CreateEstudiante)
-router.put("/:id", UpdateEstudiante)
+router.post("/auth/register", validatorRegister, register)
+router.post("/auth/login", validatorLogin, login)
+
+
+
+
 
 module.exports = router;
+
