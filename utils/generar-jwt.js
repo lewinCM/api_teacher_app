@@ -6,12 +6,13 @@ const generarJWT = (uid = '') => {
 
         const payload = { uid };
 
+        // firmando jwt
         jwt.sign(payload, process.env.JWT_SECRET, {
-            expiresIn: '4h'
+            expiresIn: '365d'
         }, (err, token) => {
 
             if (err) {
-                console.log(err);
+                // console.log(err);
                 reject('No se pudo generar el token')
             } else {
                 resolve(token);

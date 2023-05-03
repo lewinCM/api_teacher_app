@@ -1,25 +1,43 @@
-const isAdmin = (req, res, next) => {
+const { response } = require("express");
 
-  if (!req.user) {
-    return res.status(500).send("no tienes permiso para realizar esta accion");
 
+
+const esAdminRole = (req, res = response, next) => {
+
+  if (!req.usuario) {
+    return res.status(500).json({
+      msg: 'Se quiere verificar el role sin validar el token primero'
+    });
   }
-  const { rol, name } = req.user
+
+  const { rol, name } = req.usuario;
+
   if (rol !== 'admin') {
-    return res.status(500).send('necesitas permisos como admin para realizar esta accion')
-
+    return res.status(401).json({
+      msg: `${name} no es administrador - No puede hacer esto`
+    });
   }
 
-
-  return next();
+  next();
 }
+const tieneRole = (...roles) => {
+  return (req, res = response, next) => {
 
-const isRoles = (...roles) => {
-  return (req, res, next) => {
-    console.log(roles);
+    if (!req.usuario) {
+      return res.status(500).json({
+        msg: 'Se quiere verificar el role sin validar el token primero'
+      });
+    }
 
-    next()
+    if (!roles.includes(req.usuario.rol)) {
+      return res.status(401).json({
+        msg: `El servicio requiere uno de estos roles ${roles}`
+      });
+    }
+
+
+    next();
   }
-
 }
-module.exports = { isAdmin, isRoles }
+
+module.exports = { esAdminRole, tieneRole }

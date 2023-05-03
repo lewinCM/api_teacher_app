@@ -78,16 +78,24 @@ const DeleteUser = async (req, res) => {
   try {
     const id = req.params.id
 
+
+
+
     // eliminacion fisica
-    const deleteUser = await userModel.findByIdAndDelete(id)
+    // const deleteUser = await userModel.findByIdAndDelete(id)
 
     // eliminancion logica
-    // const deleteUser = await userModel.findOneAndUpdate(id, { estado: false })
+    const deleteUser = await userModel.findByIdAndUpdate(id, { estado: false })
+    // const userAuth = req.deleteUser
+
+
+
 
 
     // res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
     res.json({ msg: `el user con el id ${id} fue eliminado`, deleteUser })
   } catch (error) {
+    console.log(error);
     handleHttpError(res, 'Hubo un problema en la eliminacion del user')
 
   }

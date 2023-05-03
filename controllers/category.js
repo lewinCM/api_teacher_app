@@ -19,6 +19,10 @@ const createCategory = async (req, res) => {
 
 }
 
+
+
+
+
 const allCategory = async (req, res) => {
   try {
     const data = await categoryModel.find({})
@@ -31,7 +35,9 @@ const allCategory = async (req, res) => {
 
 const CategoryById = async (req, res) => {
   try {
-    const data = await categoryModel.findById({ id })
+    const id = req.params.id
+
+    const data = await categoryModel.findById(id)
     res.json({ ok: true, data })
   } catch (error) {
     handleHttpError(res, 'Hubo un error en enviar su mensaje')
@@ -41,7 +47,9 @@ const CategoryById = async (req, res) => {
 
 const updateCategory = async (req, res) => {
   try {
-    res.json({ ok: true })
+    const id = req.params.id
+    const data = await categoryModel.findByIdAndUpdate(id)
+    res.json({ ok: true, data })
   } catch (error) {
     handleHttpError(res, 'Hubo un error en enviar su mensaje')
   }
